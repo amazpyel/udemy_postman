@@ -1,0 +1,136 @@
+{
+	"info": {
+		"_postman_id": "b9ad2d6c-7fc5-4cc4-a78a-f3b64289249f",
+		"name": "Trello workflow",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Get all boards",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "f86d4af6-9090-404a-934d-9f6a39eeae8a",
+						"exec": [
+							"const response = pm.response.json();",
+							"console.log(response);",
+							"",
+							"",
+							"pm.test(\"Status code is 200\", function() {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"const starred_boards = 2;",
+							"",
+							"let boards_2_delete = response.length - starred_boards;",
+							"",
+							"if (response.length != starred_boards) {",
+							"    for (let key in response) {",
+							"        console.log(response[key]);",
+							"        if (response[key].starred === false && response[key].name != \"Pylkevych todo\") {",
+							"            console.log(\"Starred\" + String(response[key].starred));",
+							"            console.log(response[key].name);",
+							"            pm.environment.set(\"board_id\", response[key].id);",
+							"            postman.setNextRequest(\"Delete board\");",
+							"        }",
+							"    }",
+							"}",
+							"else {",
+							"    postman.setNextRequest(null);    ",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://api.trello.com/1/members/:id/boards?key={{trello_api_key}}&token={{trello_token}}",
+					"protocol": "https",
+					"host": [
+						"api",
+						"trello",
+						"com"
+					],
+					"path": [
+						"1",
+						"members",
+						":id",
+						"boards"
+					],
+					"query": [
+						{
+							"key": "key",
+							"value": "{{trello_api_key}}"
+						},
+						{
+							"key": "token",
+							"value": "{{trello_token}}"
+						}
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "{{trello_username}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete board",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "fc687bb6-6c31-42a1-a494-9f0465b7b484",
+						"exec": [
+							"",
+							"postman.setNextRequest(\"Get all boards\");"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "https://api.trello.com/1/boards/:board_id?key={{trello_api_key}}&token={{trello_token}}",
+					"protocol": "https",
+					"host": [
+						"api",
+						"trello",
+						"com"
+					],
+					"path": [
+						"1",
+						"boards",
+						":board_id"
+					],
+					"query": [
+						{
+							"key": "key",
+							"value": "{{trello_api_key}}"
+						},
+						{
+							"key": "token",
+							"value": "{{trello_token}}"
+						}
+					],
+					"variable": [
+						{
+							"key": "board_id",
+							"value": "{{board_id}}"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
